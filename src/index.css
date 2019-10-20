@@ -3,3 +3,21 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.calculator {
+  background: #C6E5D9;
+}
+
+.color-square {
+  height: 150px;
+  width: 150px;
+}
+
+.operator {
+  width: 3em;
+  padding: .5em 1em 0em 1em;
+}
+
+.straighten {
+  padding: .5em 1em 0em 1em;
+}

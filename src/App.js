@@ -1,8 +1,9 @@
+import axios from 'axios';
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { Container } from 'semantic-ui-react';
+import ArtCard from './components/Card';
 import Clock from './components/Clock';
-import Card from './components/Card';
-import axios from 'axios';
 
 require('dotenv').config();
 
@@ -10,7 +11,7 @@ let api_key = process.env.REACT_APP_API_KEY;
 
 
 function Welcome(props) {
-  return <h1>Hello, {props.name}</h1>;
+  return <span style={{color:'white'}}>Hello, {props.name}</span>;
 }
 
 
@@ -19,7 +20,7 @@ class App extends Component {
     super();
     this.state = {
       red: 0,
-      image: '',
+      records: '',
     }
     this.update = this
       .update
@@ -35,12 +36,22 @@ class App extends Component {
   }
 
   componentDidMount () {
+    let rembrandtItems = []
     axios
-      .get(`https://www.rijksmuseum.nl/api/nl/collection/SK-A-4691?key=${api_key}&format=json`)
+      .get(`https://www.rijksmuseum.nl/api/nl/collection?q=rembrandt&key=${api_key}&format=json`)
       .then(res => {
-        let artImage = res.data.artObject.webImage.url
-        this.setState({image: artImage})
-        console.log(res.data);
+        console.log(res.data)
+        res.data.artObjects.map(item => 
+          rembrandtItems.push({
+            title: item.longTitle,
+            image: item.webImage.url
+          })
+        );
+        // let artImage = res.data.artObject.webImage.url
+        // this.setState({image: artImage})
+        console.log(rembrandtItems);
+        this.setState({images: rembrandtItems})
+
       })
       .catch(err => {
         console.log(err);
@@ -50,20 +61,33 @@ class App extends Component {
 
   render() {
     return (
-      <div className="container">
-          
-          <h2><Welcome name="Susan" /></h2>
-          <Clock />
-        <div className="container">
-          <div className="card-group">
-            <Card image={this.state.image} />
-            <Card image={this.state.image} />
-            <Card image={this.state.image} />
-          </div>
+      <Container style={appContainerStyle}>
+        <h2>
+          <Welcome name="Susan" />
+        </h2>
+        <Clock />
+        <div style={containerStyle}>
+            {this.state.images ? (
+              this.state.images.map(image => (
+                <ArtCard image={image.image} title={image.title} />
+              ))
+            ) : (
+              <span>no image found</span>
+            )}
         </div>
-        </div>
-    );
+      </Container>
+    )
   }
+}
+
+const appContainerStyle = {
+  background: "#000033"
+}
+
+const containerStyle = {
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between'
 }
 
 export default App;
